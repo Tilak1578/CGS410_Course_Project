@@ -1,1 +1,57 @@
+Equity Market Intelligence Platform — Project Summary
+ 
+This project works through 1.01 million rows of daily OHLCV data across 455 NIFTY-listed
+Indian stocks from 2014 to 2024. The data sits in a SQLite database alongside sector metadata,
+India VIX, and US Fed Funds Rate from FRED. Ten-plus SQL queries cover the analytical
+groundwork — sector CAGR, volatility ranking, drawdown depth, 52-week proximity, liquidity
+screening, and sector rotation by calendar year.
+ 
+The EDA starts with what the data actually looks like. NIFTY 50 returns show fat tails and
+negative skew — visible in the histogram and QQ-plot. Rolling correlations between Financial Services and IT, and between
+Healthcare and Automobiles, confirm the familiar pattern: they converge toward 1.0 during stress,
+when diversification is supposed to hold. A volatility regime chart breaks the decade into low,
+medium, and high periods. Drawdown analysis records the five worst peak-to-trough episodes with
+dates and durations. The VaR backtest runs a trailing 252-day historical VaR at 95% and measures
+how often the actual loss exceeded it.
+ 
+ML Models: The feature matrix uses momentum, rolling volatility, RSI, MACD, Bollinger Band
+position, volume ratio, India VIX, and sector dummies — built without lookahead, with a hard
+2022 cutoff for train-test separation. 
 
+Model A (Return Direction) runs Logistic Regression,
+Random Forest, and XGBoost to classify next-month return direction. All three land near AUC
+0.53–0.56 — consistent with weak-form efficiency. SHAP shows trailing volatility and
+medium-horizon momentum carry the most signal.
+
+Model B (Volatility Forecasting) uses XGBoost
+Regression against a naive persistence benchmark; VIX level and trailing volatility dominate,
+confirming volatility clustering. Mincer-Zarnowitz regression checks forecast calibration. 
+
+Model C
+(Portfolio Optimization) builds an efficient frontier on a ten-stock large-cap universe via SciPy,
+then backtests equal-weight, minimum-variance, and maximum-Sharpe strategies against NIFTY 50
+from 2022 to 2024, reporting Sharpe ratio, max drawdown, and Calmar ratio across all four series.
+
+All Charts Produced
+ 
+ 1. NIFTY 50 daily log returns vs. fitted normal distribution (2014–2024)
+ 2. QQ-plot: NIFTY 50 daily returns vs. normal distribution
+ 3. Distribution of daily returns by sector — box plot (2014–2024)
+ 4. Monthly return correlation heatmap: top 20 large-cap stocks, hierarchically clustered
+ 5. 90-day rolling correlation: Financial Services vs Information Technology
+ 6. 90-day rolling correlation: Healthcare vs Automobile and Auto Components
+ 7. NIFTY 50 21-day rolling annualized volatility with regime bands (2014–2024)
+ 8. NIFTY 50 underwater chart: drawdown from running peak (2014–2024)
+ 9. VaR backtest: actual daily returns, rolling 95% VaR line, breach days highlighted
+10. NIFTY 50 cumulative return vs. India VIX with shaded crisis periods (2014–2024)
+11. Average monthly NIFTY 50 return by US Fed policy regime
+12. ROC curve comparison: Logistic Regression, Random Forest, XGBoost — Model A
+13. SHAP summary plot: global feature importance for XGBoost return direction — Model A
+14. Predicted vs. actual volatility scatter, all three models with 45-degree line — Model B
+15. XGBoost predicted vs. actual volatility over time, cross-sectional average — Model B
+16. Efficient frontier: top-10 large-cap universe with individual stock risk-return points — Model C
+17. Cumulative returns: equal-weight, min-variance, max-Sharpe vs. NIFTY 50 (2022–2024) — Model C
+ 
+The chatbot runs Qwen 2.5-1.5B-Instruct locally, translates natural-language questions into
+SQLite queries, executes them against a read-only database, and returns a plain-English
+interpretation via a Streamlit frontend.
