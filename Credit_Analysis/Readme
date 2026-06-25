@@ -1,0 +1,56 @@
+# Project Summary---- 'Credit Analysis'
+
+This project analyses 1.6 million Lending Club unsecured personal loans (2007–2018, ~$42B in originations) using pure Python to uncover 
+portfolio-level credit risk patterns and produce bank-quality recommendations.
+No machine learning in the core analysis — the work uses the frameworks credit analysts actually use: vintage curves, 
+loss decomposition, risk-return pricing, hypothesis testing, and macro-credit linkage.
+
+The central finding is structural mispricing. Grades E, F, and G carry negative interest spreads of -3.4%, -6.7%, and -5.9% —
+these grades lose money before funding costs.Recovery rates are negligible across the board (below 3.7% of originations), and
+after accounting for early payoff, effective yields are only 37–63% of stated rates.The worst-performing vintages (2012Q2 at 
+17.7% lifetime loss) came from the growth phase, not the financial crisis.
+Five hypothesis tests confirmed key risk factors: renters default 3.56pp more than mortgage holders, high-unemployment quarters add 3.98pp 
+to charge-off rates, post-2012 rates are structurally ~6pp higher, DTI shows non-linear risk acceleration above 20%, and Grade G default variance is 7.4× that of Grade A.
+
+OLS regression on macro data produced a negative coefficient — explained by the vintage lag effect — with the
+corrected stress test estimating $856M in additional losses under a +2pp unemployment shock.
+
+**ML Extensions:** A WOE/IV logistic scorecard (AUC 0.695, Gini 0.390) was built using industry-standard PDO scoring. 
+XGBoost as a challenger model achieved AUC 0.696 — a 0.001 difference — confirming the credit signal is overwhelmingly 
+linear and the transparent scorecard is the right choice. SHAP analysis showed interest rate dominates all other features combined.
+K-Means segmentation (k=5) identified five borrower segments ranging from 4% to 23% default rate.
+
+---
+
+## All Charts Produced
+
+| # | Chart |
+|---|---|
+| 1 | Total loan origination volume by year (2007–2018) |
+| 2 | Average interest rate trend by year |
+| 3 | Loan origination volume by grade and year (stacked bar) |
+| 4 | Top 10 states by origination volume |
+| 5 | Charge-off rate by loan purpose |
+| 6 | Charge-off rate by grade (A through G) |
+| 7 | Charge-off rate vs US unemployment rate (dual-axis, quarterly) |
+| 8 | Vintage cumulative loss curves (all cohorts, worst/best annotated) |
+| 9 | Roll-rate transition matrix heatmap |
+| 10 | Loss decomposition by grade (gross charge-off / recovery / net loss) |
+| 11 | Loss decomposition by loan purpose (top 10) |
+| 12 | Loss decomposition by state (top 5 worst + top 5 best) |
+| 13 | Risk-return scatter (net loss rate vs interest rate, bubble size = volume) |
+| 14 | Loan outcome distribution by origination year (stacked bar) |
+| 15 | Fully paid and prepayment rate by grade (grouped bar) |
+| 16 | Average months on book at payoff by grade |
+| 17 | H1: Default rate by home ownership category |
+| 18 | H2: Mean charge-off rate by unemployment regime + scatter |
+| 19 | H3: Structural break — boxplot pre/post 2012 + timeline |
+| 20 | H4: Charge-off rate by DTI decile + raw scatter |
+| 21 | H5: Default distribution Grade A vs G + variance by grade |
+| 22 | OLS regression scatter + stress test scenario bars |
+| 23 | Information Value ranking by feature |
+| 24 | Score distribution (good vs bad) + cutoff analysis |
+| 25 | ROC curve comparison (scorecard vs XGBoost) + feature importance |
+| 26 | SHAP summary plot (global feature impact) |
+| 27 | SHAP waterfall plots — low-risk, high-risk, borderline loans |
+| 28 | Elbow + silhouette diagnostics + cluster segments (default bar + FICO scatter) |
